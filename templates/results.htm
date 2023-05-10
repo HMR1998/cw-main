@@ -1,0 +1,11 @@
+<h3>Risk Analysis :&nbsp;</h3>
+	<form id="stats" method="post" action="/results">
+		<h4>Shots: <input type="text" name="shots" /><br/></h4>
+		
+		<h4>History: <input type="text" name="min_history" /><br/></h4>
+
+	<h4><input type="submit" name="draw" value="Draw Chart" />
+    </form>
+
+<p>Mean: {{ mean }}</p>
+<p>Std: {{ std }}</p>
