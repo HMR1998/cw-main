@@ -39,5 +39,8 @@ def data():
             (data.Open[i-2] - data.Close[i-2]) >= body
         ):
             data.at[data.index[i], 'Sell'] = 1
-
+            
+    data.reset_index(drop=False, inplace=True)
+    data = data.to_dict(orient='records')
+            
     return data

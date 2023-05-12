@@ -7,6 +7,8 @@ import time
 import http.client
 from concurrent.futures import ThreadPoolExecutor
 from data import data
+import statistics
+import numpy as np
 
 from flask import Flask, redirect, request, render_template, session, url_for
 
@@ -102,27 +104,60 @@ def get_calculations():
     resources = session.get('resources')
     min_history = int(request.form['min_history'])
     shots = int(request.form['shots'])
-    results = []
+    buy_sell = request.form['buy_sell']
+    results_95 = []
+    results_99 = []
     means = []
     stds = []
+    risk_value = []
+    date = []
+    
+    data_dict = data()
     
     for resource in range(resources):
-        for i in range(min_history, len(data)):
-            if data.Buy[i] == 1:
-                mean = data.Close[i - min_history:i].pct_change(1).mean()
-                std = data.Close[i - min_history:i].pct_change(1).std()
-                simulated = [random.gauss(mean, std) for _ in range(shots)]
-                simulated.sort(reverse=True)
-                var95 = simulated[int(len(simulated) * 0.95)]
-                var99 = simulated[int(len(simulated) * 0.99)]
-                results.append((var95, var99))
-                means.append(mean)
-                stds.append(std)
-        print(means)
-        print(stds)
+        for i, row in enumerate(data_dict[min_history:], start=min_history):
+            if buy_sell == 'buy':
+                if row['Buy'] == 1:
+                    date.append(row['Date'])
+                    mean = np.mean([r['Close'] for r in data_dict[i - min_history:i]])
+                    std = np.std([r['Close'] for r in data_dict[i - min_history:i]])
+                    simulated = [random.gauss(mean, std) for _ in range(shots)]
+                    simulated.sort(reverse=True)
+                
+                    var95 = simulated[int(len(simulated) * 0.95)]
+                    var99 = simulated[int(len(simulated) * 0.99)]
+                    results_95.append(var95)
+                    results_99.append(var99) 
+                
+                    means.append(mean)
+                    stds.append(std)
+                
+                    median = statistics.median([var95, var99])
+                    risk_value.append(median)
+                    
+            elif buy_sell == 'sell':
+                if row['Sell'] == 1:
+                    date.append(row['Date'])
+                    mean = np.mean([r['Close'] for r in data_dict[i - min_history:i]])
+                    std = np.std([r['Close'] for r in data_dict[i - min_history:i]])
+                    simulated = [random.gauss(mean, std) for _ in range(shots)]
+                    simulated.sort(reverse=True)
+                
+                    var95 = simulated[int(len(simulated) * 0.05)]
+                    var99 = simulated[int(len(simulated) * 0.01)]
+                    results_95.append(var95)
+                    results_99.append(var99) 
+                
+                    means.append(mean)
+                    stds.append(std)
+                
+                    median = statistics.median([var95, var99])
+                    risk_value.append(median)
+            date_length = len(date)
 
-    return render_template('results.htm', results=results, means=means, stds=stds)
-
+    return render_template('results.htm', results_95=results_95, results_99=results_99,
+                           means=means, stds=stds, mean=mean, std=std,
+                           risk_value=risk_value, date=date)
     
 
 # catch all other page requests - doRender checks if a page is available (shows it) or not (index)

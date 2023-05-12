@@ -4,8 +4,36 @@
 		
 		<h4>History: <input type="text" name="min_history" /><br/></h4>
 
+		<h4>Buy or Sell:
+			<select name='buy_sell'>
+			  <option value="buy">buy</option>
+			  <option value="sell">sell</option>
+			</select>
+		  </h4>
+
 	<h4><input type="submit" name="draw" value="Draw Chart" />
+    </form>
+
+    <form action="/terminate" method="GET">
+        <button type="submit">Terminate Session</button>
     </form>
 
 <p>Mean: {{ mean }}</p>
 <p>Std: {{ std }}</p>
+<table>
+    <tr>
+        <th>var95</th>
+        <th>var99</th>
+        <th>Date</th>
+    </tr>
+    {% for d in date %}
+        <tr>
+            <td>{{ results_95[loop.index0] }}</td>
+            <td>{{ results_99[loop.index0] }}</td>
+            <td>{{ d }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+  
