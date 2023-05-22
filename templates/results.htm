@@ -1,3 +1,5 @@
+<p>Service: {{ service }}</p>
+<p>Warmup Time: {{ eta_time }}</p>
 <h3>Risk Analysis :&nbsp;</h3>
 	<form id="stats" method="post" action="/results">
 		<h4>Shots: <input type="text" name="shots" /><br/></h4>
@@ -17,9 +19,26 @@
     <form action="/terminate" method="GET">
         <button type="submit">Terminate Session</button>
     </form>
-
 <p>Mean: {{ mean }}</p>
 <p>Std: {{ std }}</p>
+<p>Std: {{ resource }}</p>
+
+<table>
+    <tr>
+        <th>Average var95</th>
+        <th>Average var99</th>
+        <th>Time</th>
+    </tr>
+    {% for r in execution_time %}
+        <tr>
+            <td>{{ average_95[loop.index0] }}</td>
+            <td>{{ average_99[loop.index0] }}</td>
+            <td>{{ r }}</td>
+
+        </tr>
+    {% endfor %}
+</table>
+
 <table>
     <tr>
         <th>var95</th>
@@ -34,6 +53,10 @@
         </tr>
     {% endfor %}
 </table>
+
+<h2>Risk Values: <br/><br/></h2>
+<img src="{{ chart_url }}" alt="Chart Image">
+
 
 
   
