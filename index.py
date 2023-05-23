@@ -247,7 +247,7 @@ def get_calculations():
     chart_dates =  list(range(1, len(date) + 1))
     chart_date =  [str(x) for x in chart_dates]
 
-    url_template = 'https://image-charts.com/chart?cht=lc&chd=t:{chart_95}|{chart_99}&chs=500x300&chxt=x,y&chxl=0:|&chco=FF2027,FFFF10&chds=a&chdl=var95|var99'
+    url_template = 'https://image-charts.com/chart?cht=lc&chd=t:{chart_95}|{chart_99}&chs=500x300&chxt=x,y&chxl=0:|{chart_date}&chco=FF2027,FFFF10&chds=a&chdl=var95|var99'
 
     chart_url = url_template.format(chart_95=','.join(chart_95_str), chart_99=','.join(chart_99_str), chart_date='|'.join(map(urllib.parse.quote,chart_date)))
 
